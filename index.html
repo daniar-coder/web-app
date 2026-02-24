@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Z-Store X | Stars</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; margin-bottom: 15px; width: 90%; display: flex; justify-content: space-between; align-items: center; }
+        .stars { font-size: 20px; font-weight: bold; }
+        .price { color: #ffd700; font-size: 18px; }
+        .buy-btn { background: #007aff; border: none; color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Z-Store X</h1>
+        <p>лучший курс: 1.65₽ за 1 ⭐</p>
+    </div>
+    <div class="card">
+        <div class="stars">100 ⭐</div>
+        <div class="price">165₽</div>
+        <button class="buy-btn" onclick="sendOrder(100, 165)">купить</button>
+    </div>
+    <div class="card">
+        <div class="stars">500 ⭐</div>
+        <div class="price">825₽</div>
+        <button class="buy-btn" onclick="sendOrder(500, 825)">купить</button>
+    </div>
+    <div class="card">
+        <div class="stars">1000 ⭐</div>
+        <div class="price">1650₽</div>
+        <button class="buy-btn" onclick="sendOrder(1000, 1650)">купить</button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        function sendOrder(amount, price) {
+            tg.sendData(`buy_${amount}_${price}`);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
