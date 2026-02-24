@@ -3,50 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Z-Store X | Stars</title>
+    <title>Z-Store X | Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin-bottom: 30px; }
+        .header { text-align: center; margin-bottom: 20px; }
         .card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; margin-bottom: 15px; width: 90%; display: flex; justify-content: space-between; align-items: center; }
-        .stars { font-size: 20px; font-weight: bold; }
-        .price { color: #ffd700; font-size: 18px; }
-        .buy-btn { background: #007aff; border: none; color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: bold; }
+        .stars { font-size: 18px; font-weight: bold; }
+        .price { color: #ffd700; font-size: 16px; }
+        .buy-btn { background: #007aff; border: none; color: #fff; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+        
+        /* окно оплаты */
+        #payment-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #1c1c1e; padding: 30px; border-radius: 25px; width: 80%; border: 1px solid #007aff; text-align: center; }
+        .reks { background: #000; padding: 15px; border-radius: 15px; margin: 15px 0; font-family: monospace; color: #007aff; border: 1px dashed #333; }
+        .close-btn { background: #333; color: #fff; border: none; padding: 10px; border-radius: 10px; margin-top: 10px; width: 100%; }
+        .confirm-btn { background: #28a745; color: #fff; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🚀 Z-Store X</h1>
-        <p>лучший курс: 1.65₽ за 1 ⭐</p>
+        <p>курс: 1.65₽ | зачисление: 10-30 мин</p>
     </div>
-    <div class="card">
-        <div class="stars">100 ⭐</div>
-        <div class="price">165₽</div>
-        <button class="buy-btn" onclick="sendOrder(100, 165)">купить</button>
+
+    <div id="shop-list">
+        <div class="card">
+            <div class="stars">100 ⭐</div>
+            <div class="price">165₽</div>
+            <button class="buy-btn" onclick="openPayment(100, 165)">купить</button>
+        </div>
+        <div class="card">
+            <div class="stars">500 ⭐</div>
+            <div class="price">825₽</div>
+            <button class="buy-btn" onclick="openPayment(500, 825)">купить</button>
+        </div>
+        <div class="card">
+            <div class="stars">1000 ⭐</div>
+            <div class="price">1650₽</div>
+            <button class="buy-btn" onclick="openPayment(1000, 1650)">купить</button>
+        </div>
     </div>
-    <div class="card">
-        <div class="stars">500 ⭐</div>
-        <div class="price">825₽</div>
-        <button class="buy-btn" onclick="sendOrder(500, 825)">купить</button>
-    </div>
-    <div class="card">
-        <div class="stars">1000 ⭐</div>
-        <div class="price">1650₽</div>
-        <button class="buy-btn" onclick="sendOrder(1000, 1650)">купить</button>
+
+    <div id="payment-modal">
+        <div class="modal-content">
+            <h3 id="pay-title">оплата заказа</h3>
+            <p>переведите сумму на СБП:</p>
+            <div class="reks" onclick="copyNum()">+79502074778<br>(Т-Банк)</div>
+            <button class="confirm-btn" onclick="confirmPay()">✅ я оплатил(а)</button>
+            <button class="close-btn" onclick="closePayment()">назад</button>
+        </div>
     </div>
 
     <script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let currentOrder = {};
 
-    function sendOrder(amount, price) {
-        // этот метод отправит данные боту даже из инлайн-кнопок
-        const data = `buy_${amount}_${price}`;
-        tg.sendData(data); // для кнопки меню
-        
-        // а это как запасной вариант для закрытия окна
-        tg.close();
-    }
-</script>
+        function openPayment(amount, price) {
+            currentOrder = { amount, price };
+            document.getElementById('pay-title').innerText = `оплата ${amount} ⭐`;
+            document.getElementById('payment-modal').style.display = 'flex';
+        }
+
+        function closePayment() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+
+        function copyNum() {
+            navigator.clipboard.writeText('+79502074778');
+            tg.showAlert('номер скопирован!');
+        }
+
+        function confirmPay() {
+            // отправляем боту сигнал об оплате
+            tg.sendData(`pay_confirm_${currentOrder.amount}_${currentOrder.price}`);
+            tg.close();
+        }
+    </script>
 </body>
 </html>
