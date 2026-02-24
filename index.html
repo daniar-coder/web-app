@@ -36,12 +36,17 @@
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        function sendOrder(amount, price) {
-            tg.sendData(`buy_${amount}_${price}`);
-            tg.close();
-        }
-    </script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function sendOrder(amount, price) {
+        // этот метод отправит данные боту даже из инлайн-кнопок
+        const data = `buy_${amount}_${price}`;
+        tg.sendData(data); // для кнопки меню
+        
+        // а это как запасной вариант для закрытия окна
+        tg.close();
+    }
+</script>
 </body>
 </html>
