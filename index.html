@@ -7,45 +7,82 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin-bottom: 20px; transition: 0.3s; }
-        .card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; margin-bottom: 15px; width: 90%; display: flex; justify-content: space-between; align-items: center; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; margin-bottom: 15px; width: 95%; display: flex; justify-content: space-between; align-items: center; }
         .stars { font-size: 18px; font-weight: bold; }
         .price { color: #ffd700; font-size: 16px; }
         .buy-btn { background: #007aff; border: none; color: #fff; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         
-        /* скрытое окно оплаты */
-        #payment-screen { display: none; width: 100%; flex-direction: column; align-items: center; text-align: center; margin-top: 20px; }
+        /* экран оплаты */
+        #payment-screen { display: none; width: 100%; flex-direction: column; align-items: center; text-align: center; }
         .reks-box { background: #1c1c1e; padding: 25px; border-radius: 25px; width: 85%; border: 1px solid #007aff; margin: 20px 0; }
-        .phone { font-size: 22px; color: #007aff; font-weight: bold; letter-spacing: 1px; margin: 10px 0; }
-        .confirm-btn { background: #28a745; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 90%; font-weight: bold; margin-top: 10px; }
-        .back-link { color: #888; margin-top: 20px; text-decoration: underline; font-size: 14px; }
+        .phone { font-size: 22px; color: #007aff; font-weight: bold; cursor: pointer; margin: 10px 0; }
+        .confirm-btn { background: #28a745; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 90%; font-weight: bold; cursor: pointer; }
+        .back-btn { color: #888; margin-top: 20px; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
     <div id="main-screen">
         <div class="header">
             <h1>🚀 z-store x</h1>
-            <p>лучший курс: 1.65₽ за 1 ⭐</p>
+            <p>курс: 1.65₽ | зачисление: 10-30 мин</p>
         </div>
         <div class="card">
             <div class="stars">100 ⭐</div>
             <div class="price">165₽</div>
-            <button class="buy-btn" onclick="showPay(100, 165)">купить</button>
+            <button class="buy-btn" onclick="openPay(100, 165)">купить</button>
         </div>
         <div class="card">
             <div class="stars">500 ⭐</div>
             <div class="price">825₽</div>
-            <button class="buy-btn" onclick="showPay(500, 825)">купить</button>
+            <button class="buy-btn" onclick="openPay(500, 825)">купить</button>
         </div>
         <div class="card">
             <div class="stars">1000 ⭐</div>
             <div class="price">1650₽</div>
-            <button class="buy-btn" onclick="showPay(1000, 1650)">купить</button>
+            <button class="buy-btn" onclick="openPay(1000, 1650)">купить</button>
         </div>
     </div>
 
     <div id="payment-screen">
         <h2>💳 оплата заказа</h2>
-        <p id="order-info"></p>
+        <p id="order-details"></p>
         <div class="reks-box">
-            <p style
+            <p style="color: #888; font-size: 14px;">перевод по сбп (т-банк):</p>
+            <div class="phone" onclick="copyText()">+79502074778</div>
+            <p style="color: #007aff; font-size: 12px;">нажми на номер, чтобы скопировать</p>
+        </div>
+        <button class="confirm-btn" onclick="sendToBot()">✅ я оплатил(а)</button>
+        <div class="back-btn" onclick="goBack()">назад к выбору</div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let currentPact = { stars: 0, price: 0 };
+
+        function openPay(stars, price) {
+            currentPact = { stars, price };
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('payment-screen').style.display = 'flex';
+            document.getElementById('order-details').innerText = `выбрано: ${stars} ⭐ за ${price}₽`;
+        }
+
+        function goBack() {
+            document.getElementById('main-screen').style.display = 'block';
+            document.getElementById('payment-screen').style.display = 'none';
+        }
+
+        function copyText() {
+            navigator.clipboard.writeText('+79502074778');
+            tg.showAlert('номер скопирован!');
+        }
+
+        function sendToBot() {
+            // отправляем данные боту и только тогда закрываем
+            tg.sendData(`pay_confirm_${currentPact.stars}_${currentPact.price}`);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
