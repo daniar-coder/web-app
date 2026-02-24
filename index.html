@@ -1,86 +1,35 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>z-store x | shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; margin-bottom: 15px; width: 95%; display: flex; justify-content: space-between; align-items: center; }
-        .stars { font-size: 18px; font-weight: bold; }
-        .price { color: #ffd700; font-size: 16px; }
-        .buy-btn { background: #007aff; border: none; color: #fff; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        
-        /* экран оплаты */
-        #payment-screen { display: none; width: 100%; flex-direction: column; align-items: center; text-align: center; }
-        .reks-box { background: #1c1c1e; padding: 25px; border-radius: 25px; width: 85%; border: 1px solid #007aff; margin: 20px 0; }
-        .phone { font-size: 22px; color: #007aff; font-weight: bold; cursor: pointer; margin: 10px 0; }
-        .confirm-btn { background: #28a745; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 90%; font-weight: bold; cursor: pointer; }
-        .back-btn { color: #888; margin-top: 20px; cursor: pointer; text-decoration: underline; font-size: 14px; }
+        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        .btn { background: #007aff; color: #fff; padding: 15px; border-radius: 10px; display: block; margin: 10px; cursor: pointer; font-weight: bold; border: none; width: 100%; }
+        #pay { display: none; }
     </style>
 </head>
 <body>
-    <div id="main-screen">
-        <div class="header">
-            <h1>🚀 z-store x</h1>
-            <p>курс: 1.65₽ | зачисление: 10-30 мин</p>
-        </div>
-        <div class="card">
-            <div class="stars">100 ⭐</div>
-            <div class="price">165₽</div>
-            <button class="buy-btn" onclick="openPay(100, 165)">купить</button>
-        </div>
-        <div class="card">
-            <div class="stars">500 ⭐</div>
-            <div class="price">825₽</div>
-            <button class="buy-btn" onclick="openPay(500, 825)">купить</button>
-        </div>
-        <div class="card">
-            <div class="stars">1000 ⭐</div>
-            <div class="price">1650₽</div>
-            <button class="buy-btn" onclick="openPay(1000, 1650)">купить</button>
-        </div>
+    <div id="shop">
+        <h2>🚀 Z-Store X</h2>
+        <button class="btn" onclick="openPay(100, 165)">100 ⭐ — 165₽</button>
+        <button class="btn" onclick="openPay(500, 825)">500 ⭐ — 825₽</button>
     </div>
-
-    <div id="payment-screen">
-        <h2>💳 оплата заказа</h2>
-        <p id="order-details" style="color: #ffd700;"></p>
-        <div class="reks-box">
-            <p style="color: #888; font-size: 14px; margin-bottom: 5px;">перевод по сбп (т-банк):</p>
-            <div class="phone" onclick="copyNum()">+79502074778</div>
-            <p style="color: #007aff; font-size: 12px; margin-top: 5px;">нажми на номер, чтобы скопировать</p>
-        </div>
-        <button class="confirm-btn" onclick="sendToBot()">✅ я оплатил(а)</button>
-        <div class="back-btn" onclick="goBack()">назад к выбору</div>
+    <div id="pay">
+        <h3>💳 Оплата</h3>
+        <p>Перевод СБП: <b>+79502074778</b></p>
+        <button class="btn" style="background:#28a745" onclick="send()">✅ Я ОПЛАТИЛ(А)</button>
     </div>
-
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
-        let currentPact = { stars: 0, price: 0 };
-
-        function openPay(stars, price) {
-            currentPact = { stars, price };
-            document.getElementById('main-screen').style.display = 'none';
-            document.getElementById('payment-screen').style.display = 'flex';
-            document.getElementById('order-details').innerText = `выбрано: ${stars} ⭐ за ${price}₽`;
+        let data = "";
+        function openPay(s, p) {
+            data = `pay_confirm_${s}_${p}`;
+            document.getElementById('shop').style.display = 'none';
+            document.getElementById('pay').style.display = 'block';
         }
-
-        function goBack() {
-            document.getElementById('main-screen').style.display = 'block';
-            document.getElementById('payment-screen').style.display = 'none';
-        }
-
-        function copyNum() {
-            navigator.clipboard.writeText('+79502074778');
-            tg.showAlert('номер +79502074778 скопирован!');
-        }
-
-        function sendToBot() {
-            // отправляем сигнал боту и закрываем
-            tg.sendData(`pay_confirm_${currentPact.stars}_${currentPact.price}`);
+        function send() {
+            tg.sendData(data); // ОТПРАВКА ДАННЫХ
             tg.close();
         }
     </script>
